@@ -108,6 +108,75 @@
       overflow-x: auto;
       font-size: 0.8rem;
     }
+
+    @media print {
+      body {
+        background: white;
+        font-size: 8pt;
+        margin: 0.3in;
+        padding: 0;
+      }
+      
+      h1 {
+        font-size: 12pt;
+        margin: 0 0 0.1in 0;
+        text-align: center;
+      }
+      
+      .board {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.08in;
+        page-break-inside: avoid;
+        width: 100%;
+      }
+      
+      .column {
+        box-shadow: none;
+        border: 1px solid #999;
+        page-break-inside: avoid;
+        min-height: auto;
+        max-height: none;
+        padding: 0.05in;
+        width: auto;
+        background: white;
+      }
+      
+      .column h2 {
+        font-size: 9pt;
+        margin: 0 0 0.05in 0;
+        text-align: center;
+        font-weight: bold;
+      }
+      
+      .dropzone {
+        padding: 0;
+        min-height: auto;
+      }
+      
+      .card {
+        background: white;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+        margin-bottom: 0.02in;
+        padding: 0.03in;
+        font-size: 7pt;
+        line-height: 1.1;
+      }
+      
+      .card-title {
+        font-weight: bold;
+        font-size: 7pt;
+        margin-bottom: 0.01in;
+      }
+      
+      .card-desc {
+        font-size: 6pt;
+        color: #555;
+        margin: 0;
+        line-height: 1.0;
+      }
+    }
   </style>
 </head>
 
@@ -143,7 +212,7 @@
 </div>
 
 <div class="controls">
-  <button onclick="exportResults()">Export to Screen</button>
+  <button onclick="exportToPDF()">Download Text Report</button>
   <button onclick="exportToFile()">Download JSON</button>
 
   <label>
@@ -155,8 +224,6 @@
 
   <button onclick="resetState()">Reset</button>
 </div>
-
-<pre id="output"></pre>
 
 <script>
 const STORAGE_KEY = "personal_values_card_sort_v1";
@@ -323,9 +390,44 @@ function applyState(state) {
   });
 }
 
-function exportResults() {
-  document.getElementById("output").textContent =
-    JSON.stringify(getCurrentState(), null, 2);
+function exportToPDF() {
+  const state = getCurrentState();
+  const columnNames = {
+    'inflexibly_important': 'Inflexibly Important',
+    'flexibly_important': 'Flexibly Important', 
+    'indifferent': 'Indifferent',
+    'flexibly_reject': 'Flexibly reject',
+    'inflexibly_reject': 'Inflexibly reject'
+  };
+  
+  let content = "PERSONAL VALUES CARD SORT RESULTS\n";
+  content += "=".repeat(50) + "\n\n";
+  content += `Date: ${new Date().toLocaleDateString()}\n\n`;
+  
+  // Create text list for each column
+  Object.entries(columnNames).forEach(([key, title]) => {
+    const items = state[key] || [];
+    content += `${title.toUpperCase()}\n`;
+    content += "-".repeat(title.length) + "\n";
+    
+    if (items.length === 0) {
+      content += "(No values assigned)\n";
+    } else {
+      items.forEach((item, index) => {
+        content += `${index + 1}. ${item}\n`;
+      });
+    }
+    content += "\n";
+  });
+  
+  // Download as text file
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "values-card-sort-results.txt";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function exportToFile() {
