@@ -118,17 +118,12 @@
 <div class="board">
   <div class="column">
     <h2>Most Important</h2>
-    <div class="dropzone" data-category="most_important"></div>
+    <div class="dropzone" data-category="inflexibly_important"></div>
   </div>
 
   <div class="column">
     <h2>2nd Most Important</h2>
-    <div class="dropzone" data-category="second_most_important"></div>
-  </div>
-
-  <div class="column">
-    <h2>Important</h2>
-    <div class="dropzone" data-category="important"></div>
+    <div class="dropzone" data-category="flexibly_important"></div>
   </div>
 
   <div class="column">
@@ -254,7 +249,7 @@ const values = [
 
 let draggedCard = null;
 
-const initialZone = document.querySelector('[data-category="important"]');
+const initialZone = document.querySelector('[data-category="indifferent"]');
 
 values.forEach(([title, desc]) => {
   const card = document.createElement("div");
@@ -320,9 +315,9 @@ function applyState(state) {
   document.querySelectorAll(".dropzone").forEach(z => z.innerHTML = "");
 
   Object.entries(state).forEach(([cat, vals]) => {
-    const zone = document.querySelector(`.dropzone[data-category="${cat}"]`);
+    let zone = document.querySelector(`.dropzone[data-category="${cat}"]`);
     if (!zone) {
-      zone = document.querySelector('[data-category="important"]');
+      zone = document.querySelector('[data-category="indifferent"]');
     };
     vals.forEach(v => cards[v] && zone.appendChild(cards[v]));
   });
