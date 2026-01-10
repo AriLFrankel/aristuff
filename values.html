@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Personal Values Card Sort</title>
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f6f7f9;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .board {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .column {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 12px;
+      width: 240px;
+      min-height: 420px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .column h2 {
+      text-align: center;
+      font-size: 1.1rem;
+      margin-top: 0;
+    }
+
+    .dropzone {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .dropzone.dragover {
+      background: #e0ebff;
+      outline: 2px dashed #2563eb;
+      border-radius: 6px;
+    }
+
+    .card {
+      background: #e9edf3;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 8px;
+      cursor: grab;
+    }
+
+    .card:active {
+      cursor: grabbing;
+    }
+
+    .card-title {
+      font-weight: 600;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: #333;
+      margin-top: 4px;
+    }
+
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    button {
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: none;
+      background: #2563eb;
+      color: white;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin: 4px;
+    }
+
+    button:hover {
+      background: #1e4fd8;
+    }
+
+    pre {
+      text-align: left;
+      max-width: 1000px;
+      margin: 20px auto;
+      background: #111827;
+      color: #e5e7eb;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Personal Values Card Sort</h1>
+
+<div class="board">
+  <div class="column">
+    <h2>Most Important</h2>
+    <div class="dropzone" data-category="most_important"></div>
+  </div>
+
+  <div class="column">
+    <h2>2nd Most Important</h2>
+    <div class="dropzone" data-category="second_most_important"></div>
+  </div>
+
+  <div class="column">
+    <h2>Important</h2>
+    <div class="dropzone" data-category="important"></div>
+  </div>
+
+  <div class="column">
+    <h2>Indifferent</h2>
+    <div class="dropzone" data-category="indifferent"></div>
+  </div>
+
+  <div class="column">
+    <h2>Flexibly reject</h2>
+    <div class="dropzone" data-category="flexibly_reject"></div>
+  </div>
+
+  <div class="column">
+    <h2>inflexibly reject</h2>
+    <div class="dropzone" data-category="inflexibly_reject"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button onclick="exportResults()">Export to Screen</button>
+  <button onclick="exportToFile()">Download JSON</button>
+
+  <label>
+    <input type="file" accept="application/json" hidden onchange="importFromFile(this)">
+    <span style="cursor:pointer; color:#2563eb; text-decoration:underline;">
+      Import JSON
+    </span>
+  </label>
+
+  <button onclick="resetState()">Reset</button>
+</div>
+
+<pre id="output"></pre>
+
+<script>
+const STORAGE_KEY = "personal_values_card_sort_v1";
+
+const values = [
+  ["Acceptance","To be accepted as I am"],
+  ["Accuracy","To be accurate in my opinions and beliefs"],
+  ["Achievement","To have important accomplishments"],
+  ["Adventure","To have new and exciting experiences"],
+  ["Attractiveness","To be physically attractive"],
+  ["Authority","To be in charge of and responsible for others"],
+  ["Autonomy","To be self-determined and independent"],
+  ["Beauty","To appreciate beauty around me"],
+  ["Caring","To take care of others"],
+  ["Challenge","To take on difficult tasks and problems"],
+  ["Change","To have a life full of change and variety"],
+  ["Comfort","To have a pleasant and comfortable life"],
+  ["Commitment","To make enduring, meaningful commitments"],
+  ["Compassion","To feel and act on concern for others"],
+  ["Contribution","To make a lasting contribution in the world"],
+  ["Cooperation","To work collaboratively with others"],
+  ["Courtesy","To be considerate and polite toward others"],
+  ["Creativity","To have new and original ideas"],
+  ["Dependability","To be reliable and trustworthy"],
+  ["Duty","To carry out my duties and obligations"],
+  ["Ecology","To live in harmony with the environment"],
+  ["Excitement","To have a life full of thrills and stimulation"],
+  ["Faithfulness","To be loyal and true in relationships"],
+  ["Fame","To be known and recognized"],
+  ["Family","To have a happy, loving family"],
+  ["Fitness","To be physically fit and strong"],
+  ["Flexibility","To adjust to new circumstances easily"],
+  ["Forgiveness","To be forgiving of others"],
+  ["Friendship","To have close, supportive friends"],
+  ["Fun","To play and have fun"],
+  ["Generosity","To give what I have to others"],
+  ["Genuineness","To act in a manner true to who I am"],
+  ["God’s Will","To seek and obey the will of God"],
+  ["Growth","To keep changing and growing"],
+  ["Health","To be physically well and healthy"],
+  ["Helpfulness","To be helpful to others"],
+  ["Honesty","To be honest and truthful"],
+  ["Hope","To maintain a positive, optimistic outlook"],
+  ["Humility","To be modest and unassuming"],
+  ["Humor","To see the humorous side of life"],
+  ["Independence","To be free from dependence on others"],
+  ["Industry","To work hard and well"],
+  ["Inner Peace","To experience personal peace"],
+  ["Intimacy","To share my innermost experiences"],
+  ["Justice","To promote fair and equal treatment"],
+  ["Knowledge","To learn and contribute knowledge"],
+  ["Leisure","To take time to relax and enjoy"],
+  ["Loved","To be loved by those close to me"],
+  ["Loving","To give love to others"],
+  ["Mastery","To be competent in daily activities"],
+  ["Mindfulness","To live conscious of the present moment"],
+  ["Moderation","To avoid excesses and find balance"],
+  ["Monogamy","To have one close, loving relationship"],
+  ["Nonconformity","To question authority and norms"],
+  ["Nurturance","To take care of and nurture others"],
+  ["Openness","To be open to new experiences"],
+  ["Order","To have a well-ordered life"],
+  ["Passion","To have deep feelings"],
+  ["Pleasure","To feel good"],
+  ["Popularity","To be well-liked"],
+  ["Power","To have control over others"],
+  ["Purpose","To have meaning and direction"],
+  ["Rationality","To be guided by reason and logic"],
+  ["Realism","To act realistically and practically"],
+  ["Responsibility","To make responsible decisions"],
+  ["Risk","To take risks and chances"],
+  ["Romance","To have exciting love"],
+  ["Safety","To be safe and secure"],
+  ["Self-Acceptance","To accept myself as I am"],
+  ["Self-Control","To be disciplined in my actions"],
+  ["Self-Esteem","To feel good about myself"],
+  ["Self-Knowledge","To understand myself deeply"],
+  ["Service","To be of service to others"],
+  ["Sexuality","To have a satisfying sex life"],
+  ["Simplicity","To live simply"],
+  ["Solitude","To have time alone"],
+  ["Spirituality","To grow spiritually"],
+  ["Stability","To have a consistent life"],
+  ["Tolerance","To respect those who differ"],
+  ["Tradition","To follow respected patterns"],
+  ["Virtue","To live morally"],
+  ["Wealth","To have plenty of money"],
+  ["World Peace","To promote peace in the world"]
+];
+
+let draggedCard = null;
+
+const initialZone = document.querySelector('[data-category="important"]');
+
+values.forEach(([title, desc]) => {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.draggable = true;
+  card.dataset.value = title;
+
+  card.innerHTML = `
+    <div class="card-title">${title}</div>
+    <div class="card-desc">${desc}</div>
+  `;
+
+  card.addEventListener("dragstart", () => {
+    draggedCard = card;
+    setTimeout(() => card.style.display = "none", 0);
+  });
+
+  initialZone.appendChild(card);
+});
+
+document.querySelectorAll(".dropzone").forEach(zone => {
+  zone.addEventListener("dragover", e => {
+    e.preventDefault();
+    zone.classList.add("dragover");
+  });
+
+  zone.addEventListener("dragleave", () => {
+    zone.classList.remove("dragover");
+  });
+
+  zone.addEventListener("drop", e => {
+    e.preventDefault();
+    zone.classList.remove("dragover");
+    zone.appendChild(draggedCard);
+    draggedCard.style.display = "block";
+    draggedCard = null;
+    saveState();
+  });
+});
+
+function getCurrentState() {
+  const state = {};
+  document.querySelectorAll(".dropzone").forEach(zone => {
+    state[zone.dataset.category] =
+      [...zone.querySelectorAll(".card")].map(c => c.dataset.value);
+  });
+  return state;
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentState()));
+}
+
+function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  applyState(JSON.parse(raw));
+}
+
+function applyState(state) {
+  const cards = {};
+  document.querySelectorAll(".card").forEach(c => cards[c.dataset.value] = c);
+  document.querySelectorAll(".dropzone").forEach(z => z.innerHTML = "");
+
+  Object.entries(state).forEach(([cat, vals]) => {
+    const zone = document.querySelector(`.dropzone[data-category="${cat}"]`);
+    if (!zone) {
+      zone = document.querySelector('[data-category="important"]');
+    };
+    vals.forEach(v => cards[v] && zone.appendChild(cards[v]));
+  });
+}
+
+function exportResults() {
+  document.getElementById("output").textContent =
+    JSON.stringify(getCurrentState(), null, 2);
+}
+
+function exportToFile() {
+  const blob = new Blob(
+    [JSON.stringify(getCurrentState(), null, 2)],
+    { type: "application/json" }
+  );
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "values-card-sort.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importFromFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const state = JSON.parse(e.target.result);
+    applyState(state);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  };
+  reader.readAsText(file);
+  input.value = "";
+}
+
+function resetState() {
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+loadState();
+</script>
+
+</body>
+</html>
