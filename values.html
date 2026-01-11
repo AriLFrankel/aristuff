@@ -2,19 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Personal Values Card Sort</title>
 
   <style>
     body {
       font-family: system-ui, sans-serif;
-      background: #f6f7f9;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       margin: 0;
       padding: 20px;
+      min-height: 100vh;
     }
 
     h1 {
       text-align: center;
       margin-bottom: 20px;
+      color: white;
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
     .board {
@@ -26,21 +32,35 @@
     }
 
     .column {
-      background: #ffffff;
-      border-radius: 8px;
-      padding: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px;
       width: 240px;
       min-height: 420px;
       max-height: 80vh;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .column:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.2);
     }
 
     .column h2 {
       text-align: center;
       font-size: 1.1rem;
       margin-top: 0;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
     }
 
     .dropzone {
@@ -50,17 +70,27 @@
     }
 
     .dropzone.dragover {
-      background: #e0ebff;
-      outline: 2px dashed #2563eb;
-      border-radius: 6px;
+      background: rgba(37, 99, 235, 0.1);
+      outline: 2px dashed #667eea;
+      border-radius: 8px;
     }
 
     .card {
-      background: #e9edf3;
-      border-radius: 6px;
-      padding: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      padding: 12px;
       margin-bottom: 8px;
       cursor: grab;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      backdrop-filter: blur(5px);
+      transition: all 0.2s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      background: rgba(255, 255, 255, 0.95);
     }
 
     .card:active {
@@ -83,19 +113,29 @@
     }
 
     button {
-      padding: 8px 14px;
-      border-radius: 6px;
+      padding: 12px 18px;
+      border-radius: 8px;
       border: none;
-      background: #2563eb;
-      color: white;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
       font-size: 0.9rem;
       cursor: pointer;
       margin: 4px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      backdrop-filter: blur(5px);
+      transition: all 0.2s ease;
     }
-
+    
     button:hover {
-      background: #1e4fd8;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      background: rgba(255, 255, 255, 1);
     }
+    
+    button:active {
+      transform: translateY(0);
 
     pre {
       text-align: left;
@@ -177,6 +217,126 @@
         line-height: 1.0;
       }
     }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 1024px) {
+      .board {
+        gap: 12px;
+      }
+      
+      .column {
+        width: 200px;
+        min-height: 350px;
+        max-height: 70vh;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+      }
+      
+      .board {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+      
+      .column {
+        width: 100%;
+        max-width: 350px;
+        min-height: 200px;
+        max-height: none;
+      }
+      
+      .column h2 {
+        font-size: 1.2rem;
+      }
+      
+      .card {
+        padding: 12px;
+        margin-bottom: 10px;
+        /* Enhanced touch targets */
+        min-height: 44px;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+      
+      .card-title {
+        font-size: 1rem;
+      }
+      
+      .card-desc {
+        font-size: 0.9rem;
+      }
+      
+      .controls {
+        margin-top: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+      }
+      
+      button {
+        padding: 12px 16px;
+        font-size: 1rem;
+        min-height: 44px;
+        touch-action: manipulation;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+      
+      h1 {
+        font-size: 1.3rem;
+      }
+      
+      .column {
+        padding: 10px;
+        max-width: 100%;
+      }
+      
+      .column h2 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+      }
+      
+      .card {
+        padding: 10px;
+        margin-bottom: 8px;
+      }
+      
+      .card-title {
+        font-size: 0.95rem;
+      }
+      
+      .card-desc {
+        font-size: 0.85rem;
+      }
+      
+      button {
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        flex: 1;
+        min-width: 120px;
+      }
+      
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
   </style>
 </head>
 
@@ -186,27 +346,27 @@
 
 <div class="board">
   <div class="column">
-    <h2>Most Important</h2>
+    <h2>INFLEXIBLY IMPORTANT</h2>
     <div class="dropzone" data-category="inflexibly_important"></div>
   </div>
 
   <div class="column">
-    <h2>2nd Most Important</h2>
+    <h2>FLEXIBLY IMPORTANT</h2>
     <div class="dropzone" data-category="flexibly_important"></div>
   </div>
 
   <div class="column">
-    <h2>Indifferent</h2>
+    <h2>INDIFFERENT</h2>
     <div class="dropzone" data-category="indifferent"></div>
   </div>
 
   <div class="column">
-    <h2>Flexibly reject</h2>
+    <h2>FLEXIBLY REJECT</h2>
     <div class="dropzone" data-category="flexibly_reject"></div>
   </div>
 
   <div class="column">
-    <h2>inflexibly reject</h2>
+    <h2>INFLEXIBLY REJECT</h2>
     <div class="dropzone" data-category="inflexibly_reject"></div>
   </div>
 </div>
@@ -214,13 +374,9 @@
 <div class="controls">
   <button onclick="exportToPDF()">Download Text Report</button>
   <button onclick="exportToFile()">Download JSON</button>
-
-  <label>
-    <input type="file" accept="application/json" hidden onchange="importFromFile(this)">
-    <span style="cursor:pointer; color:#2563eb; text-decoration:underline;">
-      Import JSON
-    </span>
-  </label>
+  
+  <input type="file" id="fileInput" accept="application/json" hidden onchange="importFromFile(this)">
+  <button onclick="document.getElementById('fileInput').click()">Import JSON</button>
 
   <button onclick="resetState()">Reset</button>
 </div>
@@ -315,6 +471,10 @@ const values = [
 ];
 
 let draggedCard = null;
+let touchOffset = { x: 0, y: 0 };
+let isDragging = false;
+let originalPosition = null;
+let ghostCard = null;
 
 const initialZone = document.querySelector('[data-category="indifferent"]');
 
@@ -329,13 +489,181 @@ values.forEach(([title, desc]) => {
     <div class="card-desc">${desc}</div>
   `;
 
-  card.addEventListener("dragstart", () => {
+  card.addEventListener("dragstart", (e) => {
     draggedCard = card;
     setTimeout(() => card.style.display = "none", 0);
   });
+  
+  card.addEventListener("dragend", (e) => {
+    if (draggedCard && draggedCard.style.display === "none") {
+      draggedCard.style.display = "block";
+    }
+  });
+  
+  // Touch support for mobile
+  card.addEventListener("touchstart", handleTouchStart, { passive: false });
+  card.addEventListener("touchmove", handleTouchMove, { passive: false });
+  card.addEventListener("touchend", handleTouchEnd, { passive: false });
+  
+  // Prevent context menu on long press
+  card.addEventListener("contextmenu", (e) => e.preventDefault());
 
   initialZone.appendChild(card);
 });
+
+// Touch handling functions for mobile drag and drop
+function getInsertionIndex(dropzone, clientY) {
+  const cards = [...dropzone.querySelectorAll('.card')];
+  
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    if (card === draggedCard) continue; // Skip the card being dragged
+    
+    const rect = card.getBoundingClientRect();
+    const cardMiddle = rect.top + rect.height / 2;
+    
+    if (clientY < cardMiddle) {
+      return i;
+    }
+  }
+  
+  return cards.length; // Insert at end
+}
+
+function insertCardAtPosition(dropzone, card, index) {
+  const cards = [...dropzone.querySelectorAll('.card')];
+  
+  if (index >= cards.length) {
+    dropzone.appendChild(card);
+  } else {
+    dropzone.insertBefore(card, cards[index]);
+  }
+}
+
+function handleTouchStart(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const card = e.currentTarget;
+  
+  draggedCard = card;
+  isDragging = false;
+  
+  const rect = card.getBoundingClientRect();
+  touchOffset.x = touch.clientX - rect.left;
+  touchOffset.y = touch.clientY - rect.top;
+  
+  // Store original position
+  originalPosition = {
+    parent: card.parentNode,
+    nextSibling: card.nextElementSibling
+  };
+  
+  // Small delay to distinguish between tap and drag
+  setTimeout(() => {
+    if (draggedCard === card) {
+      startDragging(card, touch);
+    }
+  }, 150);
+}
+
+function startDragging(card, touch) {
+  isDragging = true;
+  
+  // Create ghost element
+  ghostCard = card.cloneNode(true);
+  ghostCard.style.position = 'fixed';
+  ghostCard.style.pointerEvents = 'none';
+  ghostCard.style.zIndex = '1000';
+  ghostCard.style.opacity = '0.8';
+  ghostCard.style.transform = 'rotate(5deg)';
+  ghostCard.style.width = card.offsetWidth + 'px';
+  ghostCard.style.left = (touch.clientX - touchOffset.x) + 'px';
+  ghostCard.style.top = (touch.clientY - touchOffset.y) + 'px';
+  
+  document.body.appendChild(ghostCard);
+  
+  // Hide original card
+  card.style.opacity = '0.3';
+  
+  // Add visual feedback
+  document.body.style.userSelect = 'none';
+  document.querySelectorAll('.dropzone').forEach(zone => {
+    zone.style.background = '#f0f0f0';
+    zone.style.border = '2px dashed #ccc';
+  });
+}
+
+function handleTouchMove(e) {
+  if (!isDragging || !ghostCard) return;
+  
+  e.preventDefault();
+  const touch = e.touches[0];
+  
+  // Move ghost element
+  ghostCard.style.left = (touch.clientX - touchOffset.x) + 'px';
+  ghostCard.style.top = (touch.clientY - touchOffset.y) + 'px';
+  
+  // Find dropzone under finger
+  const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+  const dropzone = elementBelow?.closest('.dropzone');
+  
+  // Update dropzone highlights
+  document.querySelectorAll('.dropzone').forEach(zone => {
+    if (zone === dropzone) {
+      zone.classList.add('dragover');
+    } else {
+      zone.classList.remove('dragover');
+    }
+  });
+}
+
+function handleTouchEnd(e) {
+  e.preventDefault();
+  
+  if (!isDragging) {
+    // This was just a tap, not a drag
+    draggedCard = null;
+    return;
+  }
+  
+  const touch = e.changedTouches[0];
+  const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+  const dropzone = elementBelow?.closest('.dropzone');
+  
+  // Clean up visual feedback
+  if (ghostCard) {
+    ghostCard.remove();
+    ghostCard = null;
+  }
+  
+  draggedCard.style.opacity = '1';
+  document.body.style.userSelect = '';
+  
+  document.querySelectorAll('.dropzone').forEach(zone => {
+    zone.classList.remove('dragover');
+    zone.style.background = '';
+    zone.style.border = '';
+  });
+  
+  // Handle drop
+  if (dropzone) {
+    const insertIndex = getInsertionIndex(dropzone, touch.clientY);
+    insertCardAtPosition(dropzone, draggedCard, insertIndex);
+    saveState();
+  } else {
+    // Return to original position if no valid drop target
+    if (originalPosition.nextSibling) {
+      originalPosition.parent.insertBefore(draggedCard, originalPosition.nextSibling);
+    } else {
+      originalPosition.parent.appendChild(draggedCard);
+    }
+  }
+  
+  // Reset variables
+  isDragging = false;
+  draggedCard = null;
+  originalPosition = null;
+}
 
 document.querySelectorAll(".dropzone").forEach(zone => {
   zone.addEventListener("dragover", e => {
@@ -350,10 +678,13 @@ document.querySelectorAll(".dropzone").forEach(zone => {
   zone.addEventListener("drop", e => {
     e.preventDefault();
     zone.classList.remove("dragover");
-    zone.appendChild(draggedCard);
-    draggedCard.style.display = "block";
-    draggedCard = null;
-    saveState();
+    if (draggedCard) {
+      const insertIndex = getInsertionIndex(zone, e.clientY);
+      insertCardAtPosition(zone, draggedCard, insertIndex);
+      draggedCard.style.display = "block";
+      draggedCard = null;
+      saveState();
+    }
   });
 });
 
@@ -462,6 +793,19 @@ function resetState() {
 }
 
 loadState();
+</script>
+
+<script>
+// Add touch support detection
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+  document.body.classList.add('touch-device');
+  // Improve scrolling on mobile
+  document.addEventListener('touchmove', function(e) {
+    if (isDragging) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+}
 </script>
 
 </body>

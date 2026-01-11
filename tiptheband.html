@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tip the Band ATX</title>
+</head>
 <style>
   * {
     box-sizing: border-box;
@@ -105,33 +110,92 @@
     border-radius: 50%;
   }
 
-  @media (max-width: 600px) {
+  /* Enhanced mobile responsiveness */
+  @media (max-width: 768px) {
+    body {
+      font-size: 28px;
+      padding: 10px;
+    }
+    
     h2 {
-      font-size: 32px;
+      font-size: 36px;
+      margin: 5px;
     }
-  
+    
     .band-item {
-      padding: 10px;
+      padding: 15px;
       font-size: 24px;
-      line-height: 24px;
-
-      .avatar {
-        width: 75px;
-        height: 75px;
-      }
+      line-height: 28px;
+      min-height: 60px;
+      /* Better touch targets */
+      touch-action: manipulation;
     }
-
+    
+    .avatar {
+      width: 60px;
+      height: 60px;
+      flex-shrink: 0;
+    }
+    
     input {
+      padding: 15px;
+      font-size: 24px;
+      width: 90%;
+      margin: 10px auto;
+    }
+    
+    #header {
+      height: 140px;
       padding: 10px;
+    }
+    
+    #results {
+      margin: 125px auto 20px auto;
+      padding: 0 10px;
+    }
+    
+    #bands {
+      padding: 0;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    body {
       font-size: 20px;
     }
-
-    #header {
-      height: 130px;
+    
+    h2 {
+      font-size: 28px;
     }
-
+    
+    .band-item {
+      padding: 12px;
+      font-size: 18px;
+      line-height: 22px;
+      margin: 8px 0;
+    }
+    
+    .avatar {
+      width: 50px;
+      height: 50px;
+    }
+    
+    input {
+      padding: 12px;
+      font-size: 18px;
+      width: 95%;
+    }
+    
+    #header {
+      height: 120px;
+    }
+    
     #results {
-      margin: 115px auto;
+      margin: 105px auto 15px auto;
+    }
+    
+    .band-name {
+      font-size: 16px;
     }
   }
 </style>

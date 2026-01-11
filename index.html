@@ -1,12 +1,76 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TipTheBand Apps</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: clamp(24px, 5vw, 48px);
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    li {
+      margin: 15px 0;
+    }
+    
+    a {
+      display: block;
+      background: white;
+      color: #333;
+      text-decoration: none;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      font-size: clamp(16px, 3vw, 20px);
+    }
+    
+    a:hover, a:active {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
+      
+      a {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
 <body>
   <h1>Hello, World!</h1>
   <ul>
-    <li><a href="https://arilfrankel.github.io/aristuff/tiptheband.html">Tip the Band</a></li>
-    <li><a href="https://arilfrankel.github.io/aristuff/values.html">Personal Values Card Sort</a></li>
+    <li><a href="tiptheband.html">🎵 Tip the Band</a></li>
+    <li><a href="values.html">📋 Personal Values Card Sort</a></li>
   </ul>
-
 </body>
-
 </html>
