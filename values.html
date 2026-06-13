@@ -23,6 +23,33 @@
       text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 0 auto 16px;
+      max-width: 1200px;
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.7);
+      color: #1f2937;
+    }
+
+    .tab-btn.active {
+      background: #ffffff;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      transform: translateY(-1px);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
     .board {
       display: flex;
       gap: 16px;
@@ -136,6 +163,137 @@
     
     button:active {
       transform: translateY(0);
+    }
+
+    .comparison-section {
+      margin: 28px auto 0;
+      max-width: 1200px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      padding: 18px;
+    }
+
+    .comparison-section h2 {
+      margin: 0 0 12px;
+      font-size: 1.3rem;
+      color: #1f2937;
+      text-align: center;
+    }
+
+    .comparison-inputs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .comparison-person {
+      background: rgba(255,255,255,0.8);
+      border: 1px solid #dbe3f0;
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .comparison-person h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: #374151;
+    }
+
+    .comparison-person label {
+      display: block;
+      margin: 0 0 6px;
+      color: #374151;
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .comparison-person input[type="text"] {
+      width: 100%;
+      border: 1px solid #cfd8e3;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: #1f2937;
+      background: #f9fbff;
+    }
+
+    .comparison-person textarea {
+      width: 100%;
+      min-height: 130px;
+      resize: vertical;
+      border: 1px solid #cfd8e3;
+      border-radius: 8px;
+      padding: 10px;
+      font: 0.85rem/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: #1f2937;
+      background: #f9fbff;
+    }
+
+    .comparison-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .comparison-help {
+      margin: 8px 0 0;
+      font-size: 0.85rem;
+      color: #4b5563;
+    }
+
+    .comparison-results {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .comparison-column {
+      background: #ffffff;
+      border: 1px solid #dbe3f0;
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 160px;
+    }
+
+    .comparison-column h4 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      color: #1f2937;
+      line-height: 1.3;
+    }
+
+    .comparison-column ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 0.88rem;
+      color: #1f2937;
+      line-height: 1.35;
+    }
+
+    .comparison-column li {
+      margin-bottom: 3px;
+    }
+
+    .comparison-empty {
+      margin: 0;
+      color: #6b7280;
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    .comparison-status {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #1f2937;
+      min-height: 1.2em;
+    }
 
     pre {
       text-align: left;
@@ -284,6 +442,18 @@
         gap: 8px;
         justify-content: center;
       }
+
+      .tabs {
+        flex-wrap: wrap;
+      }
+
+      .comparison-inputs {
+        grid-template-columns: 1fr;
+      }
+
+      .comparison-results {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
       
       button {
         padding: 12px 16px;
@@ -336,6 +506,10 @@
         flex-direction: column;
         align-items: stretch;
       }
+
+      .comparison-results {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -343,6 +517,13 @@
 <body>
 
 <h1>Personal Values Card Sort</h1>
+
+<div class="tabs">
+  <button type="button" id="tabSortBtn" class="tab-btn active" onclick="switchTab('sort')">Sort Values</button>
+  <button type="button" id="tabCompareBtn" class="tab-btn" onclick="switchTab('compare')">Compare Reports</button>
+</div>
+
+<section id="sortTab" class="tab-panel active">
 
 <div class="board">
   <div class="column">
@@ -381,8 +562,77 @@
   <button onclick="resetState()">Reset</button>
 </div>
 
+</section>
+
+<section id="compareTab" class="comparison-section tab-panel">
+  <h2>Compare Two Reports</h2>
+
+  <div class="comparison-inputs">
+    <div class="comparison-person">
+      <h3>Person A</h3>
+      <label for="personAName">Name</label>
+      <input type="text" id="personAName" value="Person A" placeholder="Enter name for Person A">
+      <textarea id="comparisonInputA" placeholder="Paste JSON or text report for Person A"></textarea>
+      <div class="comparison-actions">
+        <input type="file" id="comparisonFileA" accept="application/json,text/plain,.json,.txt" hidden onchange="loadComparisonFile('A', this)">
+        <button type="button" onclick="document.getElementById('comparisonFileA').click()">Upload A Report</button>
+      </div>
+    </div>
+
+    <div class="comparison-person">
+      <h3>Person B</h3>
+      <label for="personBName">Name</label>
+      <input type="text" id="personBName" value="Person B" placeholder="Enter name for Person B">
+      <textarea id="comparisonInputB" placeholder="Paste JSON or text report for Person B"></textarea>
+      <div class="comparison-actions">
+        <input type="file" id="comparisonFileB" accept="application/json,text/plain,.json,.txt" hidden onchange="loadComparisonFile('B', this)">
+        <button type="button" onclick="document.getElementById('comparisonFileB').click()">Upload B Report</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="comparison-actions">
+    <button type="button" onclick="runComparison()">Compare A vs B</button>
+    <button type="button" onclick="downloadComparisonReport()">Download Comparison Report</button>
+    <button type="button" onclick="clearComparison()">Clear Comparison</button>
+  </div>
+
+  <p class="comparison-help">Accepted formats: exported JSON (from this page) or exported text report.</p>
+  <div id="comparisonStatus" class="comparison-status"></div>
+
+  <div class="comparison-results" id="comparisonResults">
+    <div class="comparison-column">
+      <h4 id="comparisonTitleAmore">Person A values more than Person B</h4>
+      <ul id="comparisonAmore"></ul>
+      <p class="comparison-empty" id="comparisonAmoreEmpty">No values in this category.</p>
+    </div>
+    <div class="comparison-column">
+      <h4 id="comparisonTitleBmore">Person B values more than Person A</h4>
+      <ul id="comparisonBmore"></ul>
+      <p class="comparison-empty" id="comparisonBmoreEmpty">No values in this category.</p>
+    </div>
+    <div class="comparison-column">
+      <h4>A and B disagree</h4>
+      <ul id="comparisonDisagree"></ul>
+      <p class="comparison-empty" id="comparisonDisagreeEmpty">No values in this category.</p>
+    </div>
+    <div class="comparison-column">
+      <h4>A and B basically agree</h4>
+      <ul id="comparisonAgree"></ul>
+      <p class="comparison-empty" id="comparisonAgreeEmpty">No values in this category.</p>
+    </div>
+  </div>
+</section>
+
 <script>
 const STORAGE_KEY = "personal_values_card_sort_v1";
+const COMPARISON_CATEGORIES = [
+  "inflexibly_important",
+  "flexibly_important",
+  "indifferent",
+  "flexibly_reject",
+  "inflexibly_reject"
+];
 
 const values = [
   ["Acceptance","To be accepted as I am"],
@@ -475,6 +725,7 @@ let touchOffset = { x: 0, y: 0 };
 let isDragging = false;
 let originalPosition = null;
 let ghostCard = null;
+let lastComparisonResult = null;
 
 const initialZone = document.querySelector('[data-category="indifferent"]');
 
@@ -791,6 +1042,349 @@ function resetState() {
   localStorage.removeItem(STORAGE_KEY);
   location.reload();
 }
+
+function switchTab(tabName) {
+  const showSort = tabName === "sort";
+  document.getElementById("sortTab").classList.toggle("active", showSort);
+  document.getElementById("compareTab").classList.toggle("active", !showSort);
+  document.getElementById("tabSortBtn").classList.toggle("active", showSort);
+  document.getElementById("tabCompareBtn").classList.toggle("active", !showSort);
+}
+
+function getComparisonNames() {
+  const rawA = document.getElementById("personAName").value.trim();
+  const rawB = document.getElementById("personBName").value.trim();
+  return {
+    aName: rawA || "Person A",
+    bName: rawB || "Person B"
+  };
+}
+
+function updateComparisonHeadings() {
+  const { aName, bName } = getComparisonNames();
+  document.getElementById("comparisonTitleAmore").textContent = `${aName} values more than ${bName}`;
+  document.getElementById("comparisonTitleBmore").textContent = `${bName} values more than ${aName}`;
+}
+
+function loadComparisonFile(person, input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const target = document.getElementById(person === "A" ? "comparisonInputA" : "comparisonInputB");
+    target.value = e.target.result;
+    setComparisonStatus(`${person} report loaded from file.`);
+  };
+  reader.readAsText(file);
+  input.value = "";
+}
+
+function clearComparison() {
+  document.getElementById("comparisonInputA").value = "";
+  document.getElementById("comparisonInputB").value = "";
+  lastComparisonResult = null;
+  renderComparisonLists({ aMore: [], bMore: [], disagree: [], agree: [] });
+  updateComparisonHeadings();
+  setComparisonStatus("");
+}
+
+function runComparison() {
+  const rawA = document.getElementById("comparisonInputA").value.trim();
+  const rawB = document.getElementById("comparisonInputB").value.trim();
+
+  if (!rawA || !rawB) {
+    setComparisonStatus("Please provide both A and B reports.");
+    return;
+  }
+
+  const { aName, bName } = getComparisonNames();
+
+  const parsedA = parseReportInput(rawA);
+  const parsedB = parseReportInput(rawB);
+
+  if (!parsedA.ok || !parsedB.ok) {
+    const issues = [];
+    if (!parsedA.ok) issues.push("A report could not be parsed.");
+    if (!parsedB.ok) issues.push("B report could not be parsed.");
+    setComparisonStatus(`${issues.join(" ")} Accepted formats are JSON export or text report export.`);
+    return;
+  }
+
+  const comparison = compareReports(parsedA.state, parsedB.state);
+  const labeledComparison = applyNameLabelsToComparison(comparison, aName, bName);
+  renderComparisonLists(labeledComparison);
+  updateComparisonHeadings();
+  lastComparisonResult = {
+    ...labeledComparison,
+    processedCount: comparison.processedCount,
+    aName,
+    bName
+  };
+  setComparisonStatus(`Comparison complete. Processed ${comparison.processedCount} values.`);
+}
+
+function applyNameLabelsToComparison(result, aName, bName) {
+  return {
+    aMore: result.aMore.map(item => formatComparisonItem(item.value, item.aCat, item.bCat, aName, bName)),
+    bMore: result.bMore.map(item => formatComparisonItem(item.value, item.aCat, item.bCat, aName, bName)),
+    disagree: result.disagree.map(item => formatComparisonItem(item.value, item.aCat, item.bCat, aName, bName)),
+    agree: result.agree.map(item => formatComparisonItem(item.value, item.aCat, item.bCat, aName, bName))
+  };
+}
+
+function formatComparisonItem(value, aCat, bCat, aName, bName) {
+  return `${value} (${aName}: ${formatCategory(aCat)}, ${bName}: ${formatCategory(bCat)})`;
+}
+
+function downloadComparisonReport() {
+  if (!lastComparisonResult) {
+    setComparisonStatus("Run a comparison before downloading the report.");
+    return;
+  }
+
+  const { aName, bName, processedCount } = lastComparisonResult;
+  const sections = [
+    { title: `${aName.toUpperCase()} VALUES MORE THAN ${bName.toUpperCase()}`, items: lastComparisonResult.aMore },
+    { title: `${bName.toUpperCase()} VALUES MORE THAN ${aName.toUpperCase()}`, items: lastComparisonResult.bMore },
+    { title: `${aName.toUpperCase()} AND ${bName.toUpperCase()} DISAGREE`, items: lastComparisonResult.disagree },
+    { title: `${aName.toUpperCase()} AND ${bName.toUpperCase()} BASICALLY AGREE`, items: lastComparisonResult.agree }
+  ];
+
+  let content = "PERSONAL VALUES COMPARISON REPORT\n";
+  content += "=".repeat(50) + "\n\n";
+  content += `Date: ${new Date().toLocaleDateString()}\n`;
+  content += `People: ${aName} vs ${bName}\n`;
+  content += `Compared values: ${processedCount}\n\n`;
+
+  sections.forEach(section => {
+    content += `${section.title}\n`;
+    content += "-".repeat(section.title.length) + "\n";
+    if (!section.items.length) {
+      content += "(No values in this category)\n\n";
+      return;
+    }
+    section.items.forEach((item, index) => {
+      content += `${index + 1}. ${item}\n`;
+    });
+    content += "\n";
+  });
+
+  const safeA = aName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "person-a";
+  const safeB = bName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "person-b";
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `values-comparison-${safeA}-vs-${safeB}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function parseReportInput(raw) {
+  const jsonState = tryParseJsonState(raw);
+  if (jsonState) {
+    return { ok: true, state: jsonState };
+  }
+
+  const textState = parseTextState(raw);
+  if (textState) {
+    return { ok: true, state: textState };
+  }
+
+  return { ok: false, state: null };
+}
+
+function tryParseJsonState(raw) {
+  try {
+    const parsed = JSON.parse(raw);
+    return normalizeState(parsed);
+  } catch {
+    return null;
+  }
+}
+
+function parseTextState(raw) {
+  const headingToCategory = {
+    "INFLEXIBLY IMPORTANT": "inflexibly_important",
+    "FLEXIBLY IMPORTANT": "flexibly_important",
+    "INDIFFERENT": "indifferent",
+    "FLEXIBLY REJECT": "flexibly_reject",
+    "INFLEXIBLY REJECT": "inflexibly_reject"
+  };
+
+  const state = emptyState();
+  let currentCategory = null;
+  let foundHeading = false;
+  let foundItem = false;
+
+  raw.split(/\r?\n/).forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+
+    const headingKey = trimmed.replace(/:$/, "").toUpperCase();
+    if (headingToCategory[headingKey]) {
+      currentCategory = headingToCategory[headingKey];
+      foundHeading = true;
+      return;
+    }
+
+    if (!currentCategory) return;
+
+    if (/^[-=]{3,}$/.test(trimmed) || /^\(No values assigned\)$/i.test(trimmed)) {
+      return;
+    }
+
+    const numbered = trimmed.match(/^\d+\.\s+(.+)$/);
+    if (numbered) {
+      state[currentCategory].push(numbered[1].trim());
+      foundItem = true;
+    }
+  });
+
+  if (!foundHeading || !foundItem) return null;
+  return normalizeState(state);
+}
+
+function emptyState() {
+  return {
+    inflexibly_important: [],
+    flexibly_important: [],
+    indifferent: [],
+    flexibly_reject: [],
+    inflexibly_reject: []
+  };
+}
+
+function normalizeState(input) {
+  if (!input || typeof input !== "object") return null;
+
+  const normalized = emptyState();
+  COMPARISON_CATEGORIES.forEach(cat => {
+    if (!Array.isArray(input[cat])) return;
+    normalized[cat] = input[cat]
+      .map(v => typeof v === "string" ? v.trim() : "")
+      .filter(Boolean);
+  });
+
+  const hasKnownCategory = COMPARISON_CATEGORIES.some(cat => Array.isArray(input[cat]));
+  if (!hasKnownCategory) return null;
+  return normalized;
+}
+
+function categoryMapFromState(state) {
+  const map = new Map();
+  COMPARISON_CATEGORIES.forEach(cat => {
+    state[cat].forEach(value => {
+      map.set(value, cat);
+    });
+  });
+  return map;
+}
+
+function compareReports(aState, bState) {
+  const aMap = categoryMapFromState(aState);
+  const bMap = categoryMapFromState(bState);
+  const allValues = [...new Set([...aMap.keys(), ...bMap.keys()])].sort((x, y) => x.localeCompare(y));
+
+  const aMore = [];
+  const bMore = [];
+  const disagree = [];
+  const agree = [];
+
+  const rank = {
+    inflexibly_important: 2,
+    flexibly_important: 1,
+    indifferent: 0,
+    flexibly_reject: -1,
+    inflexibly_reject: -2
+  };
+
+  const isImportant = cat => cat === "inflexibly_important" || cat === "flexibly_important";
+  const isAnyRejection = cat => cat === "flexibly_reject" || cat === "inflexibly_reject";
+  const isSoftPositive = cat => cat === "flexibly_important" || cat === "indifferent";
+
+  allValues.forEach(value => {
+    const aCat = aMap.get(value);
+    const bCat = bMap.get(value);
+    if (!aCat || !bCat) return;
+
+    const aDisagreesWithB =
+      ((aCat === "indifferent" || isImportant(aCat)) && bCat === "inflexibly_reject") ||
+      (isImportant(aCat) && isAnyRejection(bCat));
+    const bDisagreesWithA =
+      ((bCat === "indifferent" || isImportant(bCat)) && aCat === "inflexibly_reject") ||
+      (isImportant(bCat) && isAnyRejection(aCat));
+
+    if (aDisagreesWithB || bDisagreesWithA) {
+      disagree.push({ value, aCat, bCat });
+      return;
+    }
+
+    const basicallyAgree =
+      (isSoftPositive(aCat) && isSoftPositive(bCat)) ||
+      (aCat === "flexibly_reject" && bCat === "flexibly_reject");
+
+    if (basicallyAgree) {
+      agree.push({ value, aCat, bCat });
+      return;
+    }
+
+    if (rank[aCat] > rank[bCat]) {
+      aMore.push({ value, aCat, bCat });
+    } else if (rank[bCat] > rank[aCat]) {
+      bMore.push({ value, aCat, bCat });
+    }
+  });
+
+  return { aMore, bMore, disagree, agree, processedCount: allValues.length };
+}
+
+function formatCategory(cat) {
+  switch (cat) {
+    case "inflexibly_important": return "inflexibly important";
+    case "flexibly_important": return "flexibly important";
+    case "indifferent": return "indifferent";
+    case "flexibly_reject": return "flexibly reject";
+    case "inflexibly_reject": return "inflexibly reject";
+    default: return cat;
+  }
+}
+
+function renderComparisonLists(result) {
+  setList("comparisonAmore", "comparisonAmoreEmpty", result.aMore);
+  setList("comparisonBmore", "comparisonBmoreEmpty", result.bMore);
+  setList("comparisonDisagree", "comparisonDisagreeEmpty", result.disagree);
+  setList("comparisonAgree", "comparisonAgreeEmpty", result.agree);
+}
+
+function setList(listId, emptyId, items) {
+  const list = document.getElementById(listId);
+  const empty = document.getElementById(emptyId);
+  list.innerHTML = "";
+
+  if (!items.length) {
+    empty.style.display = "block";
+    return;
+  }
+
+  empty.style.display = "none";
+  items.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    list.appendChild(li);
+  });
+}
+
+function setComparisonStatus(message) {
+  document.getElementById("comparisonStatus").textContent = message;
+}
+
+renderComparisonLists({ aMore: [], bMore: [], disagree: [], agree: [] });
+updateComparisonHeadings();
+
+document.getElementById("personAName").addEventListener("input", updateComparisonHeadings);
+document.getElementById("personBName").addEventListener("input", updateComparisonHeadings);
 
 loadState();
 </script>
