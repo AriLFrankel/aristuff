@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kinks Card Sort</title>
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: linear-gradient(135deg, #880e4f 0%, #4a148c 100%);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: white;
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 0 auto 10px;
+      max-width: 1400px;
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.7);
+      color: #1f2937;
+    }
+
+    .tab-btn.active {
+      background: #ffffff;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      transform: translateY(-1px);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 0 auto 14px;
+      max-width: 1400px;
+      color: rgba(255,255,255,0.9);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .filter-bar select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255,255,255,0.9);
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #1f2937;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .board {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .column {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 14px;
+      width: 220px;
+      min-height: 420px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .column:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+    }
+
+    .column h2 {
+      text-align: center;
+      font-size: 1rem;
+      margin-top: 0;
+      margin-bottom: 2px;
+      background: linear-gradient(135deg, #880e4f, #4a148c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+
+    .column-subtitle {
+      text-align: center;
+      font-size: 0.72rem;
+      color: #9ca3af;
+      margin: 0 0 10px;
+      font-style: italic;
+    }
+
+    .dropzone {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .dropzone.dragover {
+      background: rgba(136, 14, 79, 0.08);
+      outline: 2px dashed #880e4f;
+      border-radius: 8px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      padding: 10px 10px 8px;
+      margin-bottom: 7px;
+      cursor: grab;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      backdrop-filter: blur(5px);
+      transition: all 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.14);
+      background: rgba(255, 255, 255, 0.98);
+    }
+
+    .card:active {
+      cursor: grabbing;
+    }
+
+    .card-category {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      color: white;
+      display: inline-block;
+      margin-bottom: 3px;
+    }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .card-desc {
+      font-size: 0.78rem;
+      color: #4b5563;
+      margin-top: 3px;
+      line-height: 1.3;
+    }
+
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    button {
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin: 4px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      backdrop-filter: blur(5px);
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      background: rgba(255, 255, 255, 1);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .comparison-section {
+      margin: 28px auto 0;
+      max-width: 1200px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      padding: 18px;
+    }
+
+    .comparison-section h2 {
+      margin: 0 0 12px;
+      font-size: 1.3rem;
+      color: #1f2937;
+      text-align: center;
+    }
+
+    .comparison-inputs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .comparison-person {
+      background: rgba(255,255,255,0.8);
+      border: 1px solid #dbe3f0;
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .comparison-person h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: #374151;
+    }
+
+    .comparison-person label {
+      display: block;
+      margin: 0 0 6px;
+      color: #374151;
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .comparison-person input[type="text"] {
+      width: 100%;
+      border: 1px solid #cfd8e3;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: #1f2937;
+      background: #f9fbff;
+      box-sizing: border-box;
+    }
+
+    .comparison-person textarea {
+      width: 100%;
+      min-height: 130px;
+      resize: vertical;
+      border: 1px solid #cfd8e3;
+      border-radius: 8px;
+      padding: 10px;
+      font: 0.85rem/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: #1f2937;
+      background: #f9fbff;
+      box-sizing: border-box;
+    }
+
+    .comparison-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .comparison-help {
+      margin: 8px 0 0;
+      font-size: 0.85rem;
+      color: #4b5563;
+    }
+
+    .comparison-results {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .comparison-column {
+      background: #ffffff;
+      border: 1px solid #dbe3f0;
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 160px;
+    }
+
+    .comparison-column h4 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      color: #1f2937;
+      line-height: 1.3;
+    }
+
+    .comparison-column ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 0.88rem;
+      color: #1f2937;
+      line-height: 1.35;
+    }
+
+    .comparison-column li {
+      margin-bottom: 3px;
+    }
+
+    .comparison-empty {
+      margin: 0;
+      color: #6b7280;
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    .comparison-status {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #1f2937;
+      min-height: 1.2em;
+    }
+
+    pre {
+      text-align: left;
+      max-width: 1000px;
+      margin: 20px auto;
+      background: #111827;
+      color: #e5e7eb;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+    }
+
+    @media print {
+      body {
+        background: white;
+        font-size: 8pt;
+        margin: 0.3in;
+        padding: 0;
+      }
+
+      h1 {
+        font-size: 12pt;
+        margin: 0 0 0.1in 0;
+        text-align: center;
+      }
+
+      .board {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.08in;
+        page-break-inside: avoid;
+        width: 100%;
+      }
+
+      .column {
+        box-shadow: none;
+        border: 1px solid #999;
+        page-break-inside: avoid;
+        min-height: auto;
+        max-height: none;
+        padding: 0.05in;
+        width: auto;
+        background: white;
+      }
+
+      .column h2 {
+        font-size: 9pt;
+        margin: 0 0 0.05in 0;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .dropzone {
+        padding: 0;
+        min-height: auto;
+      }
+
+      .card {
+        background: white;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+        margin-bottom: 0.02in;
+        padding: 0.03in;
+        font-size: 7pt;
+        line-height: 1.1;
+      }
+
+      .card-category {
+        font-size: 6pt;
+        padding: 1px 3px;
+      }
+
+      .card-title {
+        font-weight: bold;
+        font-size: 7pt;
+        margin-bottom: 0.01in;
+      }
+
+      .card-desc {
+        font-size: 6pt;
+        color: #555;
+        margin: 0;
+        line-height: 1.0;
+      }
+
+      .filter-bar, .controls, .tabs {
+        display: none;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .board { gap: 10px; }
+      .column { width: 190px; }
+    }
+
+    @media (max-width: 1024px) {
+      .column { width: 170px; min-height: 350px; max-height: 70vh; }
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 15px; }
+      h1 { font-size: 1.5rem; margin-bottom: 15px; }
+      .board { flex-direction: column; align-items: center; gap: 15px; }
+      .column { width: 100%; max-width: 350px; min-height: 200px; max-height: none; }
+      .column h2 { font-size: 1.2rem; }
+      .card {
+        padding: 12px;
+        margin-bottom: 10px;
+        min-height: 44px;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+      }
+      .card-title { font-size: 1rem; }
+      .card-desc { font-size: 0.88rem; }
+      .controls { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+      .tabs { flex-wrap: wrap; }
+      .comparison-inputs { grid-template-columns: 1fr; }
+      .comparison-results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      button { padding: 12px 16px; font-size: 1rem; min-height: 44px; touch-action: manipulation; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 10px; }
+      h1 { font-size: 1.3rem; }
+      .column { padding: 10px; max-width: 100%; }
+      .column h2 { font-size: 1.1rem; margin-bottom: 4px; }
+      .card { padding: 10px; margin-bottom: 8px; }
+      .card-title { font-size: 0.95rem; }
+      .card-desc { font-size: 0.82rem; }
+      button { padding: 10px 14px; font-size: 0.9rem; flex: 1; min-width: 120px; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .comparison-results { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Kinks Card Sort</h1>
+
+<div class="tabs">
+  <button type="button" id="tabSortBtn" class="tab-btn active" onclick="switchTab('sort')">Sort Kinks</button>
+  <button type="button" id="tabCompareBtn" class="tab-btn" onclick="switchTab('compare')">Compare Reports</button>
+</div>
+
+<section id="sortTab" class="tab-panel active">
+
+<div class="filter-bar">
+  <label for="categoryFilter">Category:</label>
+  <select id="categoryFilter" onchange="applyFilter()">
+    <option value="">All categories</option>
+  </select>
+</div>
+
+<div class="board">
+  <div class="column">
+    <h2>FAVORITE</h2>
+    <p class="column-subtitle">Love it</p>
+    <div class="dropzone" data-category="favorite"></div>
+  </div>
+
+  <div class="column">
+    <h2>INTERESTED</h2>
+    <p class="column-subtitle">Yes / Curious</p>
+    <div class="dropzone" data-category="interested"></div>
+  </div>
+
+  <div class="column">
+    <h2>NEUTRAL</h2>
+    <p class="column-subtitle">No strong feeling</p>
+    <div class="dropzone" data-category="neutral"></div>
+  </div>
+
+  <div class="column">
+    <h2>PASS</h2>
+    <p class="column-subtitle">Would prefer not to</p>
+    <div class="dropzone" data-category="pass"></div>
+  </div>
+
+  <div class="column">
+    <h2>HARD LIMIT</h2>
+    <p class="column-subtitle">Off the table</p>
+    <div class="dropzone" data-category="hard_limit"></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button onclick="exportToPDF()">Download Text Report</button>
+  <button onclick="exportToFile()">Download JSON</button>
+
+  <input type="file" id="fileInput" accept="application/json" hidden onchange="importFromFile(this)">
+  <button onclick="document.getElementById('fileInput').click()">Import JSON</button>
+
+  <button onclick="resetState()">Reset</button>
+</div>
+
+</section>
+
+<section id="compareTab" class="comparison-section tab-panel">
+  <h2>Compare Two Reports</h2>
+
+  <div class="comparison-inputs">
+    <div class="comparison-person">
+      <h3>Person A</h3>
+      <label for="personAName">Name</label>
+      <input type="text" id="personAName" value="Person A" placeholder="Enter name for Person A">
+      <textarea id="comparisonInputA" placeholder="Paste JSON or text report for Person A"></textarea>
+      <div class="comparison-actions">
+        <input type="file" id="comparisonFileA" accept="application/json,text/plain,.json,.txt" hidden onchange="loadComparisonFile('A', this)">
+        <button type="button" onclick="document.getElementById('comparisonFileA').click()">Upload A Report</button>
+      </div>
+    </div>
+
+    <div class="comparison-person">
+      <h3>Person B</h3>
+      <label for="personBName">Name</label>
+      <input type="text" id="personBName" value="Person B" placeholder="Enter name for Person B">
+      <textarea id="comparisonInputB" placeholder="Paste JSON or text report for Person B"></textarea>
+      <div class="comparison-actions">
+        <input type="file" id="comparisonFileB" accept="application/json,text/plain,.json,.txt" hidden onchange="loadComparisonFile('B', this)">
+        <button type="button" onclick="document.getElementById('comparisonFileB').click()">Upload B Report</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="comparison-actions">
+    <button type="button" onclick="runComparison()">Compare A vs B</button>
+    <button type="button" onclick="downloadComparisonReport()">Download Comparison Report</button>
+    <button type="button" onclick="clearComparison()">Clear Comparison</button>
+  </div>
+
+  <p class="comparison-help">Accepted formats: exported JSON (from this page) or exported text report.</p>
+  <div id="comparisonStatus" class="comparison-status"></div>
+
+  <div class="comparison-results" id="comparisonResults">
+    <div class="comparison-column">
+      <h4 id="comparisonTitleAmore">Person A is more into than Person B</h4>
+      <ul id="comparisonAmore"></ul>
+      <p class="comparison-empty" id="comparisonAmoreEmpty">No items in this category.</p>
+    </div>
+    <div class="comparison-column">
+      <h4 id="comparisonTitleBmore">Person B is more into than Person A</h4>
+      <ul id="comparisonBmore"></ul>
+      <p class="comparison-empty" id="comparisonBmoreEmpty">No items in this category.</p>
+    </div>
+    <div class="comparison-column">
+      <h4>A and B disagree</h4>
+      <ul id="comparisonDisagree"></ul>
+      <p class="comparison-empty" id="comparisonDisagreeEmpty">No items in this category.</p>
+    </div>
+    <div class="comparison-column">
+      <h4>A and B match</h4>
+      <ul id="comparisonAgree"></ul>
+      <p class="comparison-empty" id="comparisonAgreeEmpty">No items in this category.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+const STORAGE_KEY = "kinks_card_sort_v1";
+const COMPARISON_CATEGORIES = [
+  "favorite",
+  "interested",
+  "neutral",
+  "pass",
+  "hard_limit"
+];
+
+const categoryColors = {
+  "Intimacy":           "#c2185b",
+  "Clothing":           "#7b1fa2",
+  "Groupings":          "#303f9f",
+  "General":            "#1565c0",
+  "Penetration":        "#b71c1c",
+  "Special Positions":  "#e64a19",
+  "Butt stuff":         "#5d4037",
+  "Restrictive":        "#455a64",
+  "Toys":               "#00796b",
+  "Domination":         "#6a1b9a",
+  "Scenarios":          "#e65100",
+  "Taboo Scenarios":    "#c62828",
+  "Surrealism":         "#00838f",
+  "Fluids":             "#2e7d32",
+  "Touch & Stimulation":"#558b2f",
+  "Pain":               "#ad1457"
+};
+
+const kinks = [
+  // Intimacy
+  { cat: "Intimacy", title: "Romance / Affection", desc: "" },
+  { cat: "Intimacy", title: "Hugging", desc: "" },
+  { cat: "Intimacy", title: "Kissing (body)", desc: "Planting kisses on various body parts. Hickies are listed under the Pain category." },
+  { cat: "Intimacy", title: "Kissing (mouth)", desc: "" },
+  { cat: "Intimacy", title: "Spooning", desc: "Holding the partner close, often back to chest, and embracing them from behind." },
+  { cat: "Intimacy", title: "Using real names", desc: "Referring to the partner using real names, instead of pet or nicknames." },
+  { cat: "Intimacy", title: "Sleepover", desc: "Staying with your sexual partner overnight." },
+
+  // Clothing
+  { cat: "Clothing", title: "Clothed sex", desc: "" },
+  { cat: "Clothing", title: "Lingerie", desc: "" },
+  { cat: "Clothing", title: "Stockings", desc: "" },
+  { cat: "Clothing", title: "Heels", desc: "" },
+  { cat: "Clothing", title: "Leather", desc: "" },
+  { cat: "Clothing", title: "Latex", desc: "" },
+  { cat: "Clothing", title: "Uniform", desc: "" },
+  { cat: "Clothing", title: "Cosplay", desc: "" },
+  { cat: "Clothing", title: "Cross-dressing", desc: "" },
+  { cat: "Clothing", title: "Formal clothing", desc: "" },
+
+  // Groupings
+  { cat: "Groupings", title: "You and 1 male", desc: "" },
+  { cat: "Groupings", title: "You and 1 female", desc: "" },
+  { cat: "Groupings", title: "You and 1 male, 1 female", desc: "" },
+  { cat: "Groupings", title: "You and 2 males", desc: "" },
+  { cat: "Groupings", title: "You and 2 females", desc: "" },
+  { cat: "Groupings", title: "Orgy setting", desc: "" },
+
+  // General
+  { cat: "General", title: "Handjobs / fingering", desc: "Stimulating the genitalia of the partner using mainly just hands." },
+  { cat: "General", title: "Blowjobs", desc: "" },
+  { cat: "General", title: "Deep throating", desc: "" },
+  { cat: "General", title: "Swallowing", desc: "" },
+  { cat: "General", title: "Facials", desc: "The act of ejaculating directly on the face of the partner." },
+  { cat: "General", title: "Cunnilingus", desc: "" },
+  { cat: "General", title: "Face-sitting", desc: "" },
+  { cat: "General", title: "Edging", desc: "Bringing the partner very close to orgasm, then letting them cool down, and repeating." },
+  { cat: "General", title: "Teasing", desc: "" },
+  { cat: "General", title: "Stripping / Disrobing", desc: "" },
+  { cat: "General", title: "Mutual / shared masturbation", desc: "" },
+  { cat: "General", title: "Self-injury / Self-humiliation", desc: "" },
+
+  // Penetration
+  { cat: "Penetration", title: "Penetration", desc: "" },
+  { cat: "Penetration", title: "Strap-on penetration", desc: "" },
+  { cat: "Penetration", title: "Barebacking", desc: "" },
+  { cat: "Penetration", title: "Tantric/Yoni stimulation", desc: "" },
+  { cat: "Penetration", title: "Fingering", desc: "" },
+  { cat: "Penetration", title: "Object insertion", desc: "" },
+  { cat: "Penetration", title: "Fisting", desc: "" },
+
+  // Special Positions
+  { cat: "Special Positions", title: "Free-hanging / loveswings", desc: "" },
+  { cat: "Special Positions", title: "Up against walls", desc: "" },
+  { cat: "Special Positions", title: "69'ing", desc: "" },
+  { cat: "Special Positions", title: "Rope/chain suspension", desc: "" },
+  { cat: "Special Positions", title: "Unseen actor", desc: "" },
+  { cat: "Special Positions", title: "Stealth penetration", desc: "" },
+
+  // Butt stuff
+  { cat: "Butt stuff", title: "Anal teasing / threats", desc: "" },
+  { cat: "Butt stuff", title: "Anal toys / plugging", desc: "" },
+  { cat: "Butt stuff", title: "Anal sex, pegging", desc: "" },
+  { cat: "Butt stuff", title: "Rimming", desc: "" },
+  { cat: "Butt stuff", title: "Double penetration", desc: "" },
+  { cat: "Butt stuff", title: "Anal fisting", desc: "" },
+
+  // Restrictive
+  { cat: "Restrictive", title: "Gag", desc: "A rubber or plastic ornament placed in the mouth of the wearer, making them unable to speak." },
+  { cat: "Restrictive", title: "Collar", desc: "" },
+  { cat: "Restrictive", title: "Leash", desc: "A rope between the wearer (often tied to a collar) and the master." },
+  { cat: "Restrictive", title: "Rope bondage", desc: "" },
+  { cat: "Restrictive", title: "Mitts", desc: "Cloth, leather or metal tools placed over the hands in a closed fist. Makes the wearer unable to grab objects. Also includes cat paws." },
+  { cat: "Restrictive", title: "Cufflings", desc: "Wrapped around wrists and often ankles. Using hooks and rope they allow the master to restrict the wearer spontaneously." },
+  { cat: "Restrictive", title: "Wall/cross mounting", desc: "" },
+  { cat: "Restrictive", title: "Stockades", desc: "Freestanding rigs that restrict the head, and often arms or legs too." },
+  { cat: "Restrictive", title: "Chastity gear", desc: "" },
+  { cat: "Restrictive", title: "Encasement", desc: "Full encagement — cage, full rope harness, duct tape — restricting the person to minimal movement." },
+  { cat: "Restrictive", title: "Blindfolds", desc: "" },
+  { cat: "Restrictive", title: "Sensory deprivation", desc: "Covering both ears and eyes completely, often using noise-reduction tech to emphasize the feeling of isolation." },
+
+  // Toys
+  { cat: "Toys", title: "Dildos", desc: "" },
+  { cat: "Toys", title: "Plugs", desc: "" },
+  { cat: "Toys", title: "Vibrators", desc: "Phallic shaped devices with internal vibration." },
+  { cat: "Toys", title: "Magic wands", desc: "Delivers strong vibration to a larger area with greater force than a vibrator." },
+  { cat: "Toys", title: "Sybians", desc: "" },
+  { cat: "Toys", title: "Sex Machines", desc: "" },
+
+  // Domination
+  { cat: "Domination", title: "Dominant / Submissive", desc: "" },
+  { cat: "Domination", title: "Domestic servitude", desc: "" },
+  { cat: "Domination", title: "Slavery", desc: "" },
+  { cat: "Domination", title: "DD/lg, MD/lb", desc: "" },
+  { cat: "Domination", title: "Discipline", desc: "" },
+  { cat: "Domination", title: "Begging", desc: "" },
+  { cat: "Domination", title: "Forced orgasm", desc: "" },
+  { cat: "Domination", title: "Orgasm control", desc: "" },
+  { cat: "Domination", title: "Orgasm denial", desc: "" },
+
+  // Scenarios
+  { cat: "Scenarios", title: "Glory hole", desc: "Isolating a person using holes in the wall as the only link between participants." },
+  { cat: "Scenarios", title: "Humiliation", desc: "" },
+  { cat: "Scenarios", title: "Exhibitionism", desc: "" },
+  { cat: "Scenarios", title: "Voyeurism", desc: "" },
+  { cat: "Scenarios", title: "Medical", desc: "" },
+  { cat: "Scenarios", title: "Pet play (soft)", desc: "" },
+  { cat: "Scenarios", title: "Pet play (hard)", desc: "" },
+  { cat: "Scenarios", title: "Human furniture", desc: "" },
+  { cat: "Scenarios", title: "Human auctioning / appraisal", desc: "" },
+  { cat: "Scenarios", title: "Slave training", desc: "" },
+  { cat: "Scenarios", title: "Interrogation", desc: "" },
+  { cat: "Scenarios", title: "Gangbang", desc: "" },
+  { cat: "Scenarios", title: "Kidnapping", desc: "" },
+  { cat: "Scenarios", title: "Sleep play", desc: "" },
+  { cat: "Scenarios", title: "Hypnotism", desc: "" },
+  { cat: "Scenarios", title: "Unaware / Freeuse", desc: "" },
+  { cat: "Scenarios", title: "Fake public use", desc: "" },
+  { cat: "Scenarios", title: "Practical sex ed", desc: "" },
+
+  // Taboo Scenarios
+  { cat: "Taboo Scenarios", title: "Incest", desc: "The simulated fantasy of having relations with siblings, parent/child or similar structures." },
+  { cat: "Taboo Scenarios", title: "Ageplay", desc: "Acting much younger or older than your actual age to fulfil a fantasy scenario." },
+  { cat: "Taboo Scenarios", title: "Non-con / rapeplay", desc: "" },
+  { cat: "Taboo Scenarios", title: "Necrophilia", desc: "The simulated concept of a deceased participant." },
+  { cat: "Taboo Scenarios", title: "Nazi/War symbolism", desc: "" },
+  { cat: "Taboo Scenarios", title: "Cheating", desc: "" },
+  { cat: "Taboo Scenarios", title: "Real public use", desc: "" },
+
+  // Surrealism
+  { cat: "Surrealism", title: "Futanari", desc: "The concept of fully female characters having, often engorged, male genitalia." },
+  { cat: "Surrealism", title: "Furry", desc: "" },
+  { cat: "Surrealism", title: "Transformation", desc: "A character starting as one person and ending as another. Includes body-swapping and similar concepts." },
+  { cat: "Surrealism", title: "Tentacles", desc: "" },
+  { cat: "Surrealism", title: "Monster/Beast", desc: "" },
+  { cat: "Surrealism", title: "Alien", desc: "" },
+
+  // Fluids
+  { cat: "Fluids", title: "Blood", desc: "" },
+  { cat: "Fluids", title: "Watersports", desc: "" },
+  { cat: "Fluids", title: "Scat", desc: "" },
+  { cat: "Fluids", title: "Cum play", desc: "" },
+
+  // Touch & Stimulation
+  { cat: "Touch & Stimulation", title: "Cock/Pussy worship", desc: "" },
+  { cat: "Touch & Stimulation", title: "Ass worship", desc: "" },
+  { cat: "Touch & Stimulation", title: "Foot play", desc: "" },
+  { cat: "Touch & Stimulation", title: "Tickling", desc: "" },
+  { cat: "Touch & Stimulation", title: "Sensation play", desc: "" },
+  { cat: "Touch & Stimulation", title: "Electro stimulation", desc: "" },
+  { cat: "Touch & Stimulation", title: "Breath play", desc: "" },
+
+  // Pain
+  { cat: "Pain", title: "Light pain", desc: "" },
+  { cat: "Pain", title: "Heavy pain", desc: "" },
+  { cat: "Pain", title: "Hickies", desc: "" },
+  { cat: "Pain", title: "Nipple clamps", desc: "" },
+  { cat: "Pain", title: "Clothes pins / ZipStrips", desc: "" },
+  { cat: "Pain", title: "Body slapping", desc: "" },
+  { cat: "Pain", title: "Facial slapping", desc: "" },
+  { cat: "Pain", title: "Spanking", desc: "" },
+  { cat: "Pain", title: "Caning", desc: "" },
+  { cat: "Pain", title: "Flogging", desc: "" },
+  { cat: "Pain", title: "Beatings", desc: "" },
+  { cat: "Pain", title: "Whips", desc: "" },
+  { cat: "Pain", title: "Paddles", desc: "" },
+  { cat: "Pain", title: "Cock/Pussy slapping", desc: "" },
+  { cat: "Pain", title: "Cock/Pussy torture", desc: "" },
+  { cat: "Pain", title: "Breast torture", desc: "" },
+  { cat: "Pain", title: "Hot Wax", desc: "" },
+  { cat: "Pain", title: "Scratching", desc: "" },
+  { cat: "Pain", title: "Biting", desc: "" },
+  { cat: "Pain", title: "Burning", desc: "" },
+  { cat: "Pain", title: "Cutting", desc: "" },
+  { cat: "Pain", title: "Sounding", desc: "Inserting something into the urethra, predominately on male genitalia." },
+  { cat: "Pain", title: "Bruising (short-lasting)", desc: "" },
+  { cat: "Pain", title: "Markings (long-lasting)", desc: "" }
+];
+
+let draggedCard = null;
+let touchOffset = { x: 0, y: 0 };
+let isDragging = false;
+let originalPosition = null;
+let ghostCard = null;
+let lastComparisonResult = null;
+
+// Populate category filter
+const allCategories = [...new Set(kinks.map(k => k.cat))];
+const filterEl = document.getElementById('categoryFilter');
+allCategories.forEach(cat => {
+  const opt = document.createElement('option');
+  opt.value = cat;
+  opt.textContent = cat;
+  filterEl.appendChild(opt);
+});
+
+function applyFilter() {
+  const filter = filterEl.value;
+  document.querySelectorAll('.card').forEach(card => {
+    card.style.display = (!filter || card.dataset.category === filter) ? '' : 'none';
+  });
+}
+
+const initialZone = document.querySelector('[data-category="neutral"]');
+
+kinks.forEach(({ cat, title, desc }) => {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.draggable = true;
+  card.dataset.value = title;
+  card.dataset.category = cat;
+
+  const color = categoryColors[cat] || "#555";
+  card.innerHTML = `
+    <div class="card-category" style="background-color:${color}">${cat}</div>
+    <div class="card-title">${title}</div>
+    ${desc ? `<div class="card-desc">${desc}</div>` : ""}
+  `;
+
+  card.addEventListener("dragstart", () => {
+    draggedCard = card;
+    setTimeout(() => card.style.display = "none", 0);
+  });
+
+  card.addEventListener("dragend", () => {
+    if (draggedCard && draggedCard.style.display === "none") {
+      draggedCard.style.display = "";
+    }
+  });
+
+  card.addEventListener("touchstart", handleTouchStart, { passive: false });
+  card.addEventListener("touchmove", handleTouchMove, { passive: false });
+  card.addEventListener("touchend", handleTouchEnd, { passive: false });
+  card.addEventListener("contextmenu", e => e.preventDefault());
+
+  initialZone.appendChild(card);
+});
+
+function getInsertionIndex(dropzone, clientY) {
+  const cards = [...dropzone.querySelectorAll('.card')];
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    if (card === draggedCard) continue;
+    const rect = card.getBoundingClientRect();
+    if (clientY < rect.top + rect.height / 2) return i;
+  }
+  return cards.length;
+}
+
+function insertCardAtPosition(dropzone, card, index) {
+  const cards = [...dropzone.querySelectorAll('.card')];
+  if (index >= cards.length) {
+    dropzone.appendChild(card);
+  } else {
+    dropzone.insertBefore(card, cards[index]);
+  }
+}
+
+function handleTouchStart(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const card = e.currentTarget;
+  draggedCard = card;
+  isDragging = false;
+  const rect = card.getBoundingClientRect();
+  touchOffset.x = touch.clientX - rect.left;
+  touchOffset.y = touch.clientY - rect.top;
+  originalPosition = { parent: card.parentNode, nextSibling: card.nextElementSibling };
+  setTimeout(() => {
+    if (draggedCard === card) startDragging(card, touch);
+  }, 150);
+}
+
+function startDragging(card, touch) {
+  isDragging = true;
+  ghostCard = card.cloneNode(true);
+  ghostCard.style.position = 'fixed';
+  ghostCard.style.pointerEvents = 'none';
+  ghostCard.style.zIndex = '1000';
+  ghostCard.style.opacity = '0.8';
+  ghostCard.style.transform = 'rotate(5deg)';
+  ghostCard.style.width = card.offsetWidth + 'px';
+  ghostCard.style.left = (touch.clientX - touchOffset.x) + 'px';
+  ghostCard.style.top = (touch.clientY - touchOffset.y) + 'px';
+  document.body.appendChild(ghostCard);
+  card.style.opacity = '0.3';
+  document.body.style.userSelect = 'none';
+  document.querySelectorAll('.dropzone').forEach(zone => {
+    zone.style.background = '#f5f0f5';
+    zone.style.border = '2px dashed #ccc';
+  });
+}
+
+function handleTouchMove(e) {
+  if (!isDragging || !ghostCard) return;
+  e.preventDefault();
+  const touch = e.touches[0];
+  ghostCard.style.left = (touch.clientX - touchOffset.x) + 'px';
+  ghostCard.style.top = (touch.clientY - touchOffset.y) + 'px';
+  const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+  const dropzone = elementBelow?.closest('.dropzone');
+  document.querySelectorAll('.dropzone').forEach(zone => {
+    zone.classList.toggle('dragover', zone === dropzone);
+  });
+}
+
+function handleTouchEnd(e) {
+  e.preventDefault();
+  if (!isDragging) { draggedCard = null; return; }
+  const touch = e.changedTouches[0];
+  const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+  const dropzone = elementBelow?.closest('.dropzone');
+  if (ghostCard) { ghostCard.remove(); ghostCard = null; }
+  draggedCard.style.opacity = '1';
+  document.body.style.userSelect = '';
+  document.querySelectorAll('.dropzone').forEach(zone => {
+    zone.classList.remove('dragover');
+    zone.style.background = '';
+    zone.style.border = '';
+  });
+  if (dropzone) {
+    insertCardAtPosition(dropzone, draggedCard, getInsertionIndex(dropzone, touch.clientY));
+    saveState();
+  } else {
+    if (originalPosition.nextSibling) {
+      originalPosition.parent.insertBefore(draggedCard, originalPosition.nextSibling);
+    } else {
+      originalPosition.parent.appendChild(draggedCard);
+    }
+  }
+  isDragging = false;
+  draggedCard = null;
+  originalPosition = null;
+}
+
+document.querySelectorAll(".dropzone").forEach(zone => {
+  zone.addEventListener("dragover", e => {
+    e.preventDefault();
+    zone.classList.add("dragover");
+  });
+  zone.addEventListener("dragleave", () => zone.classList.remove("dragover"));
+  zone.addEventListener("drop", e => {
+    e.preventDefault();
+    zone.classList.remove("dragover");
+    if (draggedCard) {
+      insertCardAtPosition(zone, draggedCard, getInsertionIndex(zone, e.clientY));
+      draggedCard.style.display = "";
+      draggedCard = null;
+      saveState();
+    }
+  });
+});
+
+function getCurrentState() {
+  const state = {};
+  document.querySelectorAll(".dropzone").forEach(zone => {
+    state[zone.dataset.category] =
+      [...zone.querySelectorAll(".card")].map(c => c.dataset.value);
+  });
+  return state;
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentState()));
+}
+
+function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  applyState(JSON.parse(raw));
+}
+
+function applyState(state) {
+  const cards = {};
+  document.querySelectorAll(".card").forEach(c => cards[c.dataset.value] = c);
+  document.querySelectorAll(".dropzone").forEach(z => z.innerHTML = "");
+  Object.entries(state).forEach(([cat, vals]) => {
+    let zone = document.querySelector(`.dropzone[data-category="${cat}"]`);
+    if (!zone) zone = document.querySelector('[data-category="neutral"]');
+    vals.forEach(v => cards[v] && zone.appendChild(cards[v]));
+  });
+}
+
+function exportToPDF() {
+  const state = getCurrentState();
+  const columnNames = {
+    favorite:   "Favorite",
+    interested: "Interested",
+    neutral:    "Neutral",
+    pass:       "Pass",
+    hard_limit: "Hard Limit"
+  };
+  let content = "KINKS CARD SORT RESULTS\n";
+  content += "=".repeat(50) + "\n\n";
+  content += `Date: ${new Date().toLocaleDateString()}\n\n`;
+  Object.entries(columnNames).forEach(([key, title]) => {
+    const items = state[key] || [];
+    content += `${title.toUpperCase()}\n`;
+    content += "-".repeat(title.length) + "\n";
+    if (items.length === 0) {
+      content += "(No items assigned)\n";
+    } else {
+      items.forEach((item, i) => { content += `${i + 1}. ${item}\n`; });
+    }
+    content += "\n";
+  });
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "kinks-card-sort-results.txt";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportToFile() {
+  const blob = new Blob(
+    [JSON.stringify(getCurrentState(), null, 2)],
+    { type: "application/json" }
+  );
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "kinks-card-sort.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importFromFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const state = JSON.parse(e.target.result);
+    applyState(state);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  };
+  reader.readAsText(file);
+  input.value = "";
+}
+
+function resetState() {
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+function switchTab(tabName) {
+  const showSort = tabName === "sort";
+  document.getElementById("sortTab").classList.toggle("active", showSort);
+  document.getElementById("compareTab").classList.toggle("active", !showSort);
+  document.getElementById("tabSortBtn").classList.toggle("active", showSort);
+  document.getElementById("tabCompareBtn").classList.toggle("active", !showSort);
+}
+
+function getComparisonNames() {
+  const rawA = document.getElementById("personAName").value.trim();
+  const rawB = document.getElementById("personBName").value.trim();
+  return { aName: rawA || "Person A", bName: rawB || "Person B" };
+}
+
+function updateComparisonHeadings() {
+  const { aName, bName } = getComparisonNames();
+  document.getElementById("comparisonTitleAmore").textContent = `${aName} is more into than ${bName}`;
+  document.getElementById("comparisonTitleBmore").textContent = `${bName} is more into than ${aName}`;
+}
+
+function loadComparisonFile(person, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const target = document.getElementById(person === "A" ? "comparisonInputA" : "comparisonInputB");
+    target.value = e.target.result;
+    setComparisonStatus(`${person} report loaded from file.`);
+  };
+  reader.readAsText(file);
+  input.value = "";
+}
+
+function clearComparison() {
+  document.getElementById("comparisonInputA").value = "";
+  document.getElementById("comparisonInputB").value = "";
+  lastComparisonResult = null;
+  renderComparisonLists({ aMore: [], bMore: [], disagree: [], agree: [] });
+  updateComparisonHeadings();
+  setComparisonStatus("");
+}
+
+function runComparison() {
+  const rawA = document.getElementById("comparisonInputA").value.trim();
+  const rawB = document.getElementById("comparisonInputB").value.trim();
+  if (!rawA || !rawB) { setComparisonStatus("Please provide both A and B reports."); return; }
+
+  const { aName, bName } = getComparisonNames();
+  const parsedA = parseReportInput(rawA);
+  const parsedB = parseReportInput(rawB);
+
+  if (!parsedA.ok || !parsedB.ok) {
+    const issues = [];
+    if (!parsedA.ok) issues.push("A report could not be parsed.");
+    if (!parsedB.ok) issues.push("B report could not be parsed.");
+    setComparisonStatus(`${issues.join(" ")} Accepted formats are JSON export or text report export.`);
+    return;
+  }
+
+  const comparison = compareReports(parsedA.state, parsedB.state);
+  const labeled = applyNameLabelsToComparison(comparison, aName, bName);
+  renderComparisonLists(labeled);
+  updateComparisonHeadings();
+  lastComparisonResult = { ...labeled, processedCount: comparison.processedCount, aName, bName };
+  setComparisonStatus(`Comparison complete. Processed ${comparison.processedCount} items.`);
+}
+
+function applyNameLabelsToComparison(result, aName, bName) {
+  return {
+    aMore:    result.aMore.map(item    => formatComparisonItem(item.value, item.aCat, item.bCat, aName, bName)),
+    bMore:    result.bMore.map(item    => formatComparisonItem(item.value, item.aCat, item.bCat, aName, bName)),
+    disagree: result.disagree.map(item => formatComparisonItem(item.value, item.aCat, item.bCat, aName, bName)),
+    agree:    result.agree.map(item    => formatComparisonItem(item.value, item.aCat, item.bCat, aName, bName))
+  };
+}
+
+function formatComparisonItem(value, aCat, bCat, aName, bName) {
+  return `${value} (${aName}: ${formatCategory(aCat)}, ${bName}: ${formatCategory(bCat)})`;
+}
+
+function downloadComparisonReport() {
+  if (!lastComparisonResult) { setComparisonStatus("Run a comparison before downloading the report."); return; }
+  const { aName, bName, processedCount } = lastComparisonResult;
+  const sections = [
+    { title: `${aName.toUpperCase()} IS MORE INTO THAN ${bName.toUpperCase()}`, items: lastComparisonResult.aMore },
+    { title: `${bName.toUpperCase()} IS MORE INTO THAN ${aName.toUpperCase()}`, items: lastComparisonResult.bMore },
+    { title: `${aName.toUpperCase()} AND ${bName.toUpperCase()} DISAGREE`, items: lastComparisonResult.disagree },
+    { title: `${aName.toUpperCase()} AND ${bName.toUpperCase()} MATCH`, items: lastComparisonResult.agree }
+  ];
+
+  let content = "KINKS COMPARISON REPORT\n";
+  content += "=".repeat(50) + "\n\n";
+  content += `Date: ${new Date().toLocaleDateString()}\n`;
+  content += `People: ${aName} vs ${bName}\n`;
+  content += `Compared items: ${processedCount}\n\n`;
+
+  sections.forEach(section => {
+    content += `${section.title}\n`;
+    content += "-".repeat(section.title.length) + "\n";
+    if (!section.items.length) { content += "(No items in this category)\n\n"; return; }
+    section.items.forEach((item, i) => { content += `${i + 1}. ${item}\n`; });
+    content += "\n";
+  });
+
+  const safeA = aName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "person-a";
+  const safeB = bName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "person-b";
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `kinks-comparison-${safeA}-vs-${safeB}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function parseReportInput(raw) {
+  const jsonState = tryParseJsonState(raw);
+  if (jsonState) return { ok: true, state: jsonState };
+  const textState = parseTextState(raw);
+  if (textState) return { ok: true, state: textState };
+  return { ok: false, state: null };
+}
+
+function tryParseJsonState(raw) {
+  try {
+    const parsed = JSON.parse(raw);
+    return normalizeState(parsed);
+  } catch { return null; }
+}
+
+function parseTextState(raw) {
+  const headingToCategory = {
+    "FAVORITE":    "favorite",
+    "INTERESTED":  "interested",
+    "NEUTRAL":     "neutral",
+    "PASS":        "pass",
+    "HARD LIMIT":  "hard_limit"
+  };
+
+  const state = emptyState();
+  let currentCategory = null;
+  let foundHeading = false;
+  let foundItem = false;
+
+  raw.split(/\r?\n/).forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    const headingKey = trimmed.replace(/:$/, "").toUpperCase();
+    if (headingToCategory[headingKey]) {
+      currentCategory = headingToCategory[headingKey];
+      foundHeading = true;
+      return;
+    }
+    if (!currentCategory) return;
+    if (/^[-=]{3,}$/.test(trimmed) || /^\(No items assigned\)$/i.test(trimmed)) return;
+    const numbered = trimmed.match(/^\d+\.\s+(.+)$/);
+    if (numbered) {
+      state[currentCategory].push(numbered[1].trim());
+      foundItem = true;
+    }
+  });
+
+  if (!foundHeading || !foundItem) return null;
+  return normalizeState(state);
+}
+
+function emptyState() {
+  return { favorite: [], interested: [], neutral: [], pass: [], hard_limit: [] };
+}
+
+function normalizeState(input) {
+  if (!input || typeof input !== "object") return null;
+  const normalized = emptyState();
+  COMPARISON_CATEGORIES.forEach(cat => {
+    if (!Array.isArray(input[cat])) return;
+    normalized[cat] = input[cat].map(v => typeof v === "string" ? v.trim() : "").filter(Boolean);
+  });
+  const hasKnownCategory = COMPARISON_CATEGORIES.some(cat => Array.isArray(input[cat]));
+  if (!hasKnownCategory) return null;
+  return normalized;
+}
+
+function categoryMapFromState(state) {
+  const map = new Map();
+  COMPARISON_CATEGORIES.forEach(cat => {
+    state[cat].forEach(value => map.set(value, cat));
+  });
+  return map;
+}
+
+function compareReports(aState, bState) {
+  const aMap = categoryMapFromState(aState);
+  const bMap = categoryMapFromState(bState);
+  const allValues = [...new Set([...aMap.keys(), ...bMap.keys()])].sort((x, y) => x.localeCompare(y));
+
+  const aMore = [], bMore = [], disagree = [], agree = [];
+
+  const rank = { favorite: 2, interested: 1, neutral: 0, pass: -1, hard_limit: -2 };
+
+  const isPositive     = cat => cat === "favorite" || cat === "interested";
+  const isAnyPass      = cat => cat === "pass" || cat === "hard_limit";
+  const isSoftPositive = cat => cat === "interested" || cat === "neutral";
+
+  allValues.forEach(value => {
+    const aCat = aMap.get(value);
+    const bCat = bMap.get(value);
+    if (!aCat || !bCat) return;
+
+    const aDisagreesWithB =
+      ((aCat === "neutral" || isPositive(aCat)) && bCat === "hard_limit") ||
+      (isPositive(aCat) && isAnyPass(bCat));
+    const bDisagreesWithA =
+      ((bCat === "neutral" || isPositive(bCat)) && aCat === "hard_limit") ||
+      (isPositive(bCat) && isAnyPass(aCat));
+
+    if (aDisagreesWithB || bDisagreesWithA) { disagree.push({ value, aCat, bCat }); return; }
+
+    const basicallyAgree =
+      (isSoftPositive(aCat) && isSoftPositive(bCat)) ||
+      (aCat === "pass" && bCat === "pass");
+
+    if (basicallyAgree) { agree.push({ value, aCat, bCat }); return; }
+
+    if (rank[aCat] > rank[bCat]) {
+      aMore.push({ value, aCat, bCat });
+    } else if (rank[bCat] > rank[aCat]) {
+      bMore.push({ value, aCat, bCat });
+    }
+  });
+
+  return { aMore, bMore, disagree, agree, processedCount: allValues.length };
+}
+
+function formatCategory(cat) {
+  return { favorite: "Favorite", interested: "Interested", neutral: "Neutral", pass: "Pass", hard_limit: "Hard Limit" }[cat] || cat;
+}
+
+function renderComparisonLists(result) {
+  setList("comparisonAmore",   "comparisonAmoreEmpty",   result.aMore);
+  setList("comparisonBmore",   "comparisonBmoreEmpty",   result.bMore);
+  setList("comparisonDisagree","comparisonDisagreeEmpty", result.disagree);
+  setList("comparisonAgree",   "comparisonAgreeEmpty",   result.agree);
+}
+
+function setList(listId, emptyId, items) {
+  const list = document.getElementById(listId);
+  const empty = document.getElementById(emptyId);
+  list.innerHTML = "";
+  if (!items.length) { empty.style.display = "block"; return; }
+  empty.style.display = "none";
+  items.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    list.appendChild(li);
+  });
+}
+
+function setComparisonStatus(message) {
+  document.getElementById("comparisonStatus").textContent = message;
+}
+
+renderComparisonLists({ aMore: [], bMore: [], disagree: [], agree: [] });
+updateComparisonHeadings();
+
+document.getElementById("personAName").addEventListener("input", updateComparisonHeadings);
+document.getElementById("personBName").addEventListener("input", updateComparisonHeadings);
+
+loadState();
+</script>
+
+<script>
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+  document.body.classList.add('touch-device');
+  document.addEventListener('touchmove', function(e) {
+    if (isDragging) e.preventDefault();
+  }, { passive: false });
+}
+</script>
+
+</body>
+</html>
